@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hub de Economía Digital & Tradicional</title>
+    <style>
+        /* --- VARIABLES DE DISEÑO PREMIUM --- */
+        :root {
+            --bg-main: #0d1117;
+            --bg-card: #161b22;
+            --text-main: #acbfd2;
+            --text-title: #f0f6fc;
+            --accent-green: #00ff66;
+            --accent-red: #ff453a;
+            --accent-blue: #58a6ff;
+            --accent-gold: #f1e05a;
+            --accent-purple: #d4bbff;
+            --accent-teal: #00f5ff;
+            --border-color: #30363d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            font-size: 1.05rem;
+            display: flex;
+            justify-content: center;
+            padding: 0 10px;
+        }
+
+        /* --- CONTENEDOR MAESTRO --- */
+        .wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* BARRAS LATERALES (PC) */
+        .sidebar {
+            display: none;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .sidebar h4 {
+            color: var(--text-title);
+            font-size: 1.05rem;
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .market-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            margin-bottom: 14px;
+        }
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .dot-green { background-color: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+        .dot-blue { background-color: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue); }
+        .dot-teal { background-color: var(--accent-teal); box-shadow: 0 0 8px var(--accent-teal); }
+
+        /* TICKER REAL DERECHA */
+        .ticker-box {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 14px;
+            border: 1px solid var(--border-color);
+        }
+        .ticker-row-live {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        .crypto-price {
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        /* BANNER BLURRED */
+        .sidebar-thumb {
+            margin-top: 25px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            opacity: 0.45;
+            height: 260px;
+            position: relative;
+        }
+        .sidebar-thumb img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+            filter: contrast(115%) saturate(90%);
+        }
+
+        /* --- COLUMNA CENTRAL PRINCIPAL --- */
+        .container {
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+            padding-bottom: 60px;
+        }
+
+        /* --- ENCABEZADO --- */
+        header {
+            padding: 35px 5px 25px 5px;
+            text-align: center;
+        }
+
+        .meta-info {
+            font-size: 0.85rem;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        h1 {
+            color: var(--text-title);
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+
+        .header-desc {
+            font-size: 1.05rem;
+            color: #8b949e;
+        }
+
+        /* --- FILA DE CUADROS INTRODUCTORIOS (5 NODOS) --- */
+        .intro-scroll-container {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            padding: 5px 5px 18px 5px;
+            margin-bottom: 35px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .intro-scroll-container::-webkit-scrollbar { height: 4px; }
+        .intro-scroll-container::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+
+        .intro-card {
+            flex: 0 0 75%;
+            scroll-snap-align: start;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .intro-badge { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; }
+        .intro-card h3 { color: var(--text-title); font-size: 1.15rem; margin-bottom: 8px; }
+        .intro-card p { font-size: 0.9rem; color: #8b949e; }
+
+        /* --- SECCIÓN: DESGLOSE RÁPIDO DE TEMAS --- */
+        .section-title {
+            color: var(--text-title);
+            font-size: 1.35rem;
+            margin-top: 15px;
+            margin-bottom: 18px;
+            padding-left: 6px;
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .topic-row {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .topic-header { display: flex; justify-content: space-between; align-items: center; }
+        .topic-name { color: var(--text-title); font-size: 1.2rem; font-weight: 600; }
+        .topic-desc { font-size: 0.95rem; color: #acbfd2; line-height: 1.5; }
+
+        /* --- ALERTAS BANCARIAS DINÁMICAS (CORREGIDO: ARRIBA DEL SIMULADOR) --- */
+        .live-alerts-box {
+            background: rgba(0, 245, 255, 0.03);
+            border: 1px solid rgba(0, 245, 255, 0.15);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .alert-title {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--accent-teal);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .news-item {
+            font-size: 0.9rem;
+            color: #8b949e;
+            line-height: 1.4;
+        }
+
+        /* --- SECCIÓN DE ADVERTENCIAS / CRÍTICA --- */
+        .danger-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 25px 0;
+        }
+        .danger-col {
+            background-color: rgba(255, 69, 58, 0.03);
+            border: 1px solid rgba(255, 69, 58, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .danger-col h4 {
+            color: var(--accent-red);
+            font-size: 1.15rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .danger-col p {
+            font-size: 0.95rem;
+            color: #8b949e;
+            text-align: justify;
+        }
+
+        /* --- INTERACTIVO PERFECTO: SIMULADOR DE VIABILIDAD MULTIPANEL --- */
+        .sim-container {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 22px;
+            margin: 25px 0;
+        }
+        .sim-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+            overflow-x: auto;
+        }
+        .sim-tab-btn {
+            flex: 1;
+            white-space: nowrap;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 0.88rem;
+        }
+        .sim-tab-btn.active {
+            background-color: rgba(88, 166, 255, 0.1);
+            border-color: var(--accent-blue);
+            color: var(--text-title);
+        }
+        .sim-panel { display: none; }
+        .sim-panel.active { display: block; }
+        
+        .sim-group {
+            margin-bottom: 14px;
+        }
+        .sim-group label {
+            display: block;
+            font-size: 0.88rem;
+            color: #8b949e;
+            margin-bottom: 6px;
+        }
+        .sim-input {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-title);
+            font-size: 1rem;
+        }
+        .sim-result-box {
+            margin-top: 18px;
+            background: rgba(0,0,0,0.2);
+            border-left: 4px solid var(--accent-gold);
+            padding: 14px;
+            border-radius: 0 8px 8px 0;
+        }
+        .sim-result-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: #8b949e;
+            margin-bottom: 4px;
+        }
+        .sim-result-value {
+            font-size: 1.25rem;
+            color: var(--text-title);
+            font-weight: 700;
+        }
+
+        /* --- ESTILOS DE PLATAFORMAS --- */
+        .platform-box {
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 14px;
+            margin: 6px 0;
+        }
+        .platform-box-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #8b949e;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .platform-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .platform-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+        .platform-link {
+            color: var(--text-title);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .platform-link:hover { color: var(--accent-blue); }
+        .platform-spec { font-size: 0.85rem; color: #6e7681; }
+
+        /* --- BOTONES ORGÁNICOS --- */
+        .resource-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: var(--text-title);
+        }
+        .resource-btn:active { background-color: rgba(255, 255, 255, 0.08); }
+
+        /* DESCARGAS */
+        .download-box {
+            background: linear-gradient(145deg, #1c2128, #161b22);
+            border: 1px dashed var(--accent-blue);
+            border-radius: 12px;
+            padding: 18px;
+            margin: 30px 0;
+        }
+        .download-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .download-item:last-child { border: none; }
+        .download-title { font-size: 0.95rem; color: var(--text-title); font-weight: 500; }
+        .download-link { font-size: 0.9rem; color: var(--accent-blue); text-decoration: none; font-weight: bold; }
+
+        /* --- SECCIÓN: ENCICLOPEDIA EXTENDIDA --- */
+        .wiki-extended-section {
+            margin-top: 45px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 35px;
+        }
+        .wiki-article {
+            margin-bottom: 40px;
+        }
+        .wiki-article h3 {
+            color: var(--text-title);
+            font-size: 1.3rem;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .wiki-article p {
+            font-size: 0.98rem;
+            color: #8b949e;
+            text-align: justify;
+            margin-bottom: 14px;
+            line-height: 1.6;
+        }
+        .wiki-divider {
+            height: 1px;
+            background: linear-gradient(90deg, var(--border-color) 0%, transparent 100%);
+            margin-top: 30px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 35px 10px 15px 10px;
+            font-size: 0.85rem;
+            color: #484f58;
+            border-top: 1px solid var(--border-color);
+            margin-top: 25px;
+        }
+
+        /* --- RESPONSIVE ADAPTATIVO ESCRITORIOS --- */
+        @media (min-width: 992px) {
+            .wrapper {
+                grid-template-columns: 280px 1fr 280px;
+                padding-top: 40px;
+            }
+            .sidebar { display: block; }
+            .intro-scroll-container {
+                overflow-x: visible;
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+            }
+            .intro-card { flex: none; }
+            .danger-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+
+        <!-- BARRA LATERAL IZQUIERDA: ESTATUS RÁPIDO -->
+        <aside class="sidebar">
+            <h4>Estatus del Mercado</h4>
+            <div class="market-item">
+                <span><span class="status-dot dot-green"></span> Volatilidad Cripto</span>
+                <span style="color: var(--accent-green); font-weight: bold;">Alta</span>
+            </div>
+            <div class="market-item">
+                <span><span class="status-dot dot-teal"></span> Interés Bancario</span>
+                <span style="color: var(--accent-teal); font-weight: bold;">Fijo</span>
+            </div>
+            <div class="market-item">
+                <span><span class="status-dot dot-blue"></span> Liquidez Global</span>
+                <span style="color: var(--accent-blue); font-weight: bold;">Óptima</span>
+            </div>
+
+            <div class="sidebar-thumb">
+                <img src="https://images.unsplash.com/photo-1621416894569-0f39ed31d247?q=80&w=300&auto=format&fit=crop" alt="Criptos y Velas">
+            </div>
+        </aside>
+
+        <!-- COLUMNA CENTRAL PRINCIPAL -->
+        <main class="container">
+
+            <header>
+                <div class="meta-info">Documentación de Hub Abierto</div>
+                <h1>Modelos Digitales & Rendimiento Tradicional</h1>
+                <p class="header-desc">Desglose analítico de los pilares de capitalización, inversión, logística y tasas de interés bancario.</p>
+            </header>
+
+            <!-- 5 CUADROS INTRODUCTORIOS -->
+            <div class="intro-scroll-container">
+                <div class="intro-card">
+                    <div>
+                        <div class="intro-badge" style="color: var(--accent-green);">01. Capital</div>
+                        <h3>Airdrops</h3>
+                    </div>
+                    <p>Sistemas sin inversión inicial.</p>
+                </div>
+                <div class="intro-card">
+                    <div>
+                        <div class="intro-badge" style="color: var(--accent-blue);">02. Riesgo</div>
+                        <h3>Especulación</h3>
+                    </div>
+                    <p>Trading técnico de derivados.</p>
+                </div>
+                <div class="intro-card">
+                    <div>
+                        <div class="intro-badge" style="color: var(--accent-gold);">03. Reserva</div>
+                        <h3>Preservación</h3>
+                    </div>
+                    <p>Custodia personal cripto.</p>
+                </div>
+                <div class="intro-card">
+                    <div>
+                        <div class="intro-badge" style="color: var(--accent-purple);">04. Negocio</div>
+                        <h3>Logística</h3>
+                    </div>
+                    <p>Dropshipping global.</p>
+                </div>
+                <div class="intro-card">
+                    <div>
+                        <div class="intro-badge" style="color: var(--accent-teal);">05. Renta</div>
+                        <h3>Bancos</h3>
+                    </div>
+                    <p>Efectivo Anual y plazos fijos.</p>
+                </div>
+            </div>
+
+            <h2 class="section-title">Análisis Rápido por Sector</h2>
+
+            <!-- TEMA 1: INGRESO GRATIS -->
+            <div class="topic-row">
+                <div class="topic-header">
+                    <span class="topic-name">Cripto Faucets & Airdrops</span>
+                    <span style="font-size: 0.85rem; color: var(--accent-green);">Gratis</span>
+                </div>
+                <p class="topic-desc">Distribución de tokens para incentivar la adopción de protocolos. Permite generar tenencias iniciales completando interacciones básicas en redes de prueba.</p>
+                <a href="https://shrinkme.click/FinanzasCom" target="_blank" rel="noopener noreferrer" class="resource-btn">Ver lista de Airdrops Activos ➔</a>
+            </div>
+
+            <!-- TEMA 2: TRADING -->
+            <div class="topic-row">
+                <div class="topic-header">
+                    <span class="topic-name">Trading de Derivados</span>
+                    <span style="font-size: 0.85rem; color: var(--accent-blue);">Habilidad</span>
+                </div>
+                <p class="topic-desc">Ejecución de contratos por diferencia (CFDs) sobre índices y divisas. Exige dominio técnico estricto de gráficas y cálculo del apalancamiento.</p>
+                <a href="https://shrinkme.click/FinanzasCom" target="_blank" rel="noopener noreferrer" class="resource-btn">Acceder a terminales de análisis ➔</a>
+            </div>
+
+            <!-- TEMA 3: EFECTIVO ANUAL BANCARIO -->
+            <div class="topic-row" style="border-color: rgba(0, 245, 255, 0.25);">
+                <div class="topic-header">
+                    <span class="topic-name">Renta Fija Tradicional (Efectivo Anual)</span>
+                    <span style="font-size: 0.85rem; color: var(--accent-teal);">Pasivo Seguro</span>
+                </div>
+                <p class="topic-desc">Depósitos a término (Plazos Fijos/CDTs) o Cuentas de Ahorro de Alto Rendimiento. La tasa de <strong>Efectivo Anual (E.A.)</strong> calcula el interés real neto tras un año entero de capitalización compuesta.</p>
+                <a href="https://shrinkme.click/FinanzasCom" target="_blank" rel="noopener noreferrer" class="resource-btn" style="color: var(--accent-teal);">Comparar Tasas de Interés Vigentes ➔</a>
+            </div>
+
+            <!-- TEMA 4: CRIPTOS / INVESTING -->
+            <div class="topic-row">
+                <div class="topic-header">
+                    <span class="topic-name">Inversión & Holding Cripto</span>
+                    <span style="font-size: 0.85rem; color: var(--accent-gold);">Patrimonio</span>
+                </div>
+                <p class="topic-desc">Adquisición directa y custodia autónoma de activos descentralizados. Se fundamenta en la acumulación constante para promediar el precio del mercado.</p>
+                <a href="https://shrinkme.click/FinanzasCom" target="_blank" rel="noopener noreferrer" class="resource-btn">Guía de Almacenamiento Seguro ➔</a>
+            </div>
+
+            <!-- TEMA 5: DROPSHIPPING -->
+            <div class="topic-row">
+                <div class="topic-header">
+                    <span class="topic-name">Dropshipping & E-Commerce</span>
+                    <span style="font-size: 0.85rem; color: var(--accent-purple);">Negocio</span>
+                </div>
+                <p class="topic-desc">Intermediación comercial donde vendes productos directo de fábrica al consumidor sin acumular stock. Su éxito depende del costo de adquisición publicitaria.</p>
+                <a href="https://shrinkme.click/FinanzasCom" target="_blank" rel="noopener noreferrer" class="resource-btn">Directorio de Proveedores Globales ➔</a>
+            </div>
+
+            <!-- INFORMES DE RIESGO CRÍTICO -->
+            <h2 class="section-title" style="border-left-color: var(--accent-red);">Informes de Riesgo Crítico</h2>
+            <div class="danger-grid">
+                <div class="danger-col">
+                    <h4>⚠ El Peligro Oculto de las Apps de Trading</h4>
+                    <p>
+                        El verdadero negocio de las aplicaciones de trading masivo es capitalizar tu pérdida. Más del 85% de los traders minoristas quiebran cuentas rápido por culpa del diseño de las apps enfocado en la ludopatía digital.
+                    </p>
+                </div>
+                <div class="danger-col">
+                    <h4>⚠ La Trampa de la Inflación vs Rendimiento</h4>
+                    <p>
+                        Ganar tasas en un banco no es ganancia neta absoluta. Si el banco te ofrece un 10% Efectivo Anual pero la inflación real es del 9%, tu poder de compra aumentó apenas un 1%. Dejar dinero en cuentas que pagan menos que la inflación es perder capital pasivamente.
+                    </p>
+                </div>
+            </div>
+
+            <!-- REPORTE DE RED MACRO (UBICADO DE FORMA SEGURA AQUÍ) -->
+            <div class="live-alerts-box">
+                <div class="alert-title">
+                    <span style="width: 6px; height: 6px; background: var(--accent-teal); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span>
+                    Reporte de Red Bancaria y Macroeconómica
+                </div>
+                <p class="news-item">
+                    <strong>Neobancos globales</strong> actualizan tasas de captación para la segunda mitad del año fiscal. Los rendimientos de cuentas de alto rendimiento con liquidez a la vista se estabilizan cerca del promedio de los fondos institucionales.
+                </p>
+            </div>
+
+            <!-- INTERACTIVO TOTALMENTE VISIBLE: SIMULADOR MATEMÁTICO -->
+            <section class="sim-container">
+                <h3 style="color: var(--text-title); font-size: 1.15rem; margin-bottom: 15px;">📊 Simulador Analítico de Viabilidad</h3>
+                
+                <div class="sim-tabs">
+                    <button class="sim-tab-btn active" onclick="switchSimTab('trading-sim')">Riesgo en Trading</button>
+                    <button class="sim-tab-btn" onclick="switchSimTab('drop-sim')">Margen Dropshipping</button>
+                    <button class="sim-tab-btn" onclick="switchSimTab('bank-sim')" style="color: var(--accent-teal); border-color: rgba(0,245,255,0.3);">Renta Bancaria (E.A.)</button>
+                </div>
+
+                <!-- PANEL TRADING -->
+                <div id="trading-sim" class="sim-panel active">
+                    <div class="sim-group">
+                        <label>Capital de la cuenta ($)</label>
+                        <input type="number" id="trade-cap" class="sim-input" value="100" oninput="calcTradingSim()">
+                    </div>
+                    <div class="sim-group">
+                        <label>Riesgo por operación sugerido por Apps (Ej: 10%)</label>
+                        <input type="number" id="trade-risk" class="sim-input" value="10" oninput="calcTradingSim()">
+                    </div>
+                    <div class="sim-result-box" style="border-left-color: var(--accent-red);">
+                        <div class="sim-result-title">Operaciones seguidas para la ruina total:</div>
+                        <div id="trade-res" class="sim-result-value" style="color: var(--accent-red);">10 operaciones</div>
+                    </div>
+                </div>
+
+                <!-- PANEL DROPSHIPPING -->
+                <div id="drop-sim" class="sim-panel">
+                    <div class="sim-group">
+                        <label>Precio de Venta al Público ($)</label>
+                        <input type="number" id="drop-pvp" class="sim-input" value="35" oninput="calcDropSim()">
+                    </div>
+                    <div class="sim-group">
+                        <label>Costo del producto + Envío del proveedor ($)</label>
+                        <input type="number" id="drop-cost" class="sim-input" value="15" oninput="calcDropSim()">
+                    </div>
+                    <div class="sim-result-box" style="border-left-color: var(--accent-blue);">
+                        <div class="sim-result-title">Límite de costo publicitario (CPA Máximo) antes de pérdidas:</div>
+                        <div id="drop-res" class="sim-result-value" style="color: var(--accent-blue);">$20.00</div>
+                    </div>
+                </div>
+
+                <!-- PANEL INTERÉS BANCARIO EFECTIVO ANUAL (COMPLETAMENTE OPERATIVO) -->
+                <div id="bank-sim" class="sim-panel">
+                    <div class="sim-group">
+                        <label>Capital a Depositar ($)</label>
+                        <input type="number" id="bank-cap" class="sim-input" value="1000" oninput="calcBankSim()">
+                    </div>
+                    <div class="sim-group">
+                        <label>Tasa Efectivo Anual del Banco (E.A. %)</label>
+                        <input type="number" id="bank-ea" class="sim-input" value="12" oninput="calcBankSim()">
+                    </div>
+                    <div class="sim-result-box" style="border-left-color: var(--accent-teal);">
+                        <div class="sim-result-title">Ganancia neta pasiva generada al cabo de 1 año:</div>
+                        <div id="bank-res" class="sim-result-value" style="color: var(--accent-teal);">$120.00</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN DE RECURSOS DESCARGABLES -->
+            <div class="download-box">
+                <div style="font-size: 0.85rem; font-weight: bold; text-transform: uppercase; color: var(--accent-blue); margin-bottom: 12px;">💾 Recursos e Instrumental de Trabajo</div>
+                <div class="download-item">
+                    <span class="download-title">📊 Bitácora de Gestión de Riesgo (Excel)</span>
+                    <a href="https://shrinkme.click/FinanzasCom" target="_blank" rel="noopener noreferrer" class="download-link">[Descargar]</a>
+                </div>
+                <div class="download-item">
+                    <span class="download-title">📈 Calculadora avanzada de Interés Compuesto E.A.</span>
+                    <a href="https://shrinkme.click/FinanzasCom" target="_blank" rel="noopener noreferrer" class="download-link">[Descargar]</a>
+                </div>
+            </div>
+
+            <!-- ENCICLOPEDIA EXTENDIDA -->
+            <section class="wiki-extended-section">
+                <h2 class="section-title">Enciclopedia Técnico Desglosada</h2>
+
+                <article class="wiki-article">
+                    <h3><span style="color: var(--accent-teal);">■</span> La Dinámica Bancaria: Rendimiento Efectivo Anual (E.A.)</h3>
+                    <p>
+                        El interés <strong>Efectivo Anual (E.A.)</strong> representa la rentabilidad o coste matemático definitivo de un producto financiero durante el ciclo de un año completo. A diferencia de las tasas nominales simples, el modelo efectivo calcula la acumulación compuesta; asumiendo que los intereses liquidados periódicamente son reinvertidos de forma inmediata sobre el capital base.
+                    </p>
+                    <p>
+                        Las corporaciones financieras tradicionales y digitales utilizan estos parámetros dentro de sus tasas de captación para asegurar fondos del público mediante depósitos fijos asegurados. Analizar la tasa E.A. cruzándola directamente con los índices de precios al consumidor es la única métrica real que protege un patrimonio del declive inflacionario en mercados fiat.
+                    </p>
+                </article>
+            </section>
+
+            <footer>
+                <p>Compendio Informativo de Acceso Público 2026.</p>
+                <p>Analiza y contrasta cada modelo antes de comprometer fondos.</p>
+            </footer>
+
+        </main>
+
+        <!-- BARRA LATERAL DERECHA: EXCLUSIVA PARA EL TICKER DE PRECIOS CRIPTO -->
+        <aside class="sidebar">
+            <h4>Precios del Mercado</h4>
+            <div class="ticker-box">
+                <div style="font-size: 0.8rem; font-weight: bold; color: var(--accent-green); text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 4px;">
+                    <span style="width: 6px; height: 6px; background: var(--accent-green); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span> Índices Crypto (En vivo)
+                </div>
+                <div class="ticker-row-live">
+                    <span>BTC/USDT</span>
+                    <span id="btc-price" class="crypto-price" style="color: var(--text-title);">Cargando...</span>
+                </div>
+                <div class="ticker-row-live">
+                    <span>ETH/USDT</span>
+                    <span id="eth-price" class="crypto-price" style="color: var(--text-title);">Cargando...</span>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <style>
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+    </style>
+
+    <!-- SCRIPTS DE CONTROL INTERACTIVO Y API -->
+    <script>
+        function switchSimTab(tabId) {
+            document.querySelectorAll('.sim-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sim-tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function calcTradingSim() {
+            const cap = parseFloat(document.getElementById('trade-cap').value) || 0;
+            const riskPct = parseFloat(document.getElementById('trade-risk').value) || 0;
+            if(riskPct <= 0) { document.getElementById('trade-res').innerText = "Inválido"; return; }
+            const ops = Math.floor(100 / riskPct);
+            document.getElementById('trade-res').innerText = `${ops} operaciones fallidas continuas`;
+        }
+
+        function calcDropSim() {
+            const pvp = parseFloat(document.getElementById('drop-pvp').value) || 0;
+            const cost = parseFloat(document.getElementById('drop-cost').value) || 0;
+            const breakEven = pvp - cost;
+            document.getElementById('drop-res').innerText = breakEven > 0 ? `$${breakEven.toFixed(2)}` : "$0.00 (Margen Negativo)";
+        }
+
+        function calcBankSim() {
+            const cap = parseFloat(document.getElementById('bank-cap').value) || 0;
+            const ea = parseFloat(document.getElementById('bank-ea').value) || 0;
+            const gain = cap * (ea / 100);
+            document.getElementById('bank-res').innerText = `$${gain.toFixed(2)}`;
+        }
+
+        async function fetchMarketPrices() {
+            try {
+                const response = await fetch('https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT"]');
+                const data = await response.json();
+                data.forEach(ticker => {
+                    const price = parseFloat(ticker.price);
+                    if (ticker.symbol === "BTCUSDT") {
+                        document.getElementById('btc-price').innerText = `$${price.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                    } else if (ticker.symbol === "ETHUSDT") {
+                        document.getElementById('eth-price').innerText = `$${price.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                    }
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        fetchMarketPrices();
+        setInterval(fetchMarketPrices, 5000);
+    </script>
+</body>
+</html>
